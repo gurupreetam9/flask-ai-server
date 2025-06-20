@@ -35,7 +35,7 @@ stop_words = set(stopwords.words('english'))
 course_keywords = {"course", "certification", "developer", "programming", "bootcamp", "internship", "award", "degree", "diploma", "training"}
 
 # --- Constants ---
-COHERE_API_KEY = "jrAUYREK77bel5TGil5uyrzogksRcSxP78v97egn"
+COHERE_API_KEY = os.environ["COHERE_API_KEY"]
 
 if not COHERE_API_KEY:
     logging.warning("COHERE_API_KEY not found in environment variables. LLM fallback will not work.")
