@@ -22,12 +22,12 @@ from datetime import datetime, timezone # Added for timezone-aware datetimes
 # --- Initial Setup ---
 try:
     nltk.data.find('corpora/words')
-except nltk.downloader.DownloadError:
+except LookupError:
     nltk.download('words', quiet=True)
 
 try:
     nltk.data.find('corpora/stopwords')
-except nltk.downloader.DownloadError:
+except LookupError:
     nltk.download('stopwords', quiet=True)
 
 english_vocab = set(w.lower() for w in nltk_words.words())
