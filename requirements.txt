@@ -9,3 +9,4 @@ pillow
 ultralytics
 nltk
 cohere
+gunicorn

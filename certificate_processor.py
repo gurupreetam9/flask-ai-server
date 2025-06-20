@@ -34,6 +34,7 @@ english_vocab = set(w.lower() for w in nltk_words.words())
 stop_words = set(stopwords.words('english'))
 course_keywords = {"course", "certification", "developer", "programming", "bootcamp", "internship", "award", "degree", "diploma", "training"}
 
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 # --- Constants ---
 COHERE_API_KEY = os.environ["COHERE_API_KEY"]
 
