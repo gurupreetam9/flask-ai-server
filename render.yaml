@@ -2,6 +2,8 @@ services:
   - type: web
     name: flask-ai-server
     runtime: python
-    buildCommand: "./build.sh && pip install -r requirements.txt"
+    buildCommand: |
+      ./build.sh
+      pip install --no-cache-dir -r requirements.txt
     startCommand: "python app.py"
     autoDeploy: true
