@@ -129,8 +129,8 @@ course_graph = {
     }
 }
 
-YOLO_MODEL_PATH = "D:/CertIntel/certificate.v1i.yolov8(1)/runs/detect/exp/weights/best.pt"
-model = None
+YOLO_MODEL_PATH = "models/best.pt"
+model = YOLO(YOLO_MODEL_PATH)
 try:
     if os.path.exists(YOLO_MODEL_PATH):
         model = YOLO(YOLO_MODEL_PATH)
