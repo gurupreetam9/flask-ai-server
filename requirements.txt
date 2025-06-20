@@ -1,0 +1,11 @@
+flask
+flask-cors
+pymongo
+python-dotenv
+pdf2image
+opencv-python
+pytesseract
+pillow
+ultralytics
+nltk
+cohere
