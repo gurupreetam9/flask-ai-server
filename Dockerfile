@@ -1,11 +1,10 @@
-# Use an official lightweight Python image
+# Use a base image
 FROM python:3.10-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Avoid interactive prompts during install
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies (including tesseract + poppler)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     poppler-utils \
@@ -13,21 +12,22 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxext6 \
     libxrender-dev \
+    libgl1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy project files into the container
+# Copy project files
 COPY . /app
 
-# Install Python dependencies
+# Install Python packages
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Expose the port your app runs on
+# Expose the port used by Flask / Gunicorn
 EXPOSE 10000
 
-# Run the application with Gunicorn in production mode
+# Start app in production using Gunicorn
 CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000"]
