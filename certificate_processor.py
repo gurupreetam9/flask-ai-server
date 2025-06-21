@@ -131,21 +131,34 @@ course_graph = {
 }
 
 YOLO_MODEL_PATH = "models/best.pt"
-model = YOLO(YOLO_MODEL_PATH)
-try:
-    if os.path.exists(YOLO_MODEL_PATH):
-        model = YOLO(YOLO_MODEL_PATH)
-        logging.info(f"Successfully loaded YOLO model from: {YOLO_MODEL_PATH}")
-    else:
-        script_dir_model_path = os.path.join(os.path.dirname(__file__), 'best.pt')
-        if os.path.exists(script_dir_model_path) and YOLO_MODEL_PATH == "best.pt": 
-             model = YOLO(script_dir_model_path)
-             logging.info(f"Successfully loaded YOLO model from script directory: {script_dir_model_path}")
-        else:
-            logging.error(f"YOLO model not found at path: {YOLO_MODEL_PATH} or in script directory (if default path was 'best.pt'). Please check the path or set YOLO_MODEL_PATH.")
-except Exception as e:
-    logging.error(f"Error loading YOLO model: {e}")
+model = None
+def load_model():
+    global model
+    if model is not None:
+        return model  # Already loaded
 
+    try:
+        # Try loading from YOLO_MODEL_PATH
+        if os.path.exists(YOLO_MODEL_PATH):
+            model = YOLO(YOLO_MODEL_PATH)
+            logging.info(f"Successfully loaded YOLO model from: {YOLO_MODEL_PATH}")
+        else:
+            # Fallback to current script directory if YOLO_MODEL_PATH was a simple filename
+            script_dir_model_path = os.path.join(os.path.dirname(__file__), 'best.pt')
+            if os.path.exists(script_dir_model_path) and YOLO_MODEL_PATH == "best.pt":
+                model = YOLO(script_dir_model_path)
+                logging.info(f"Successfully loaded YOLO model from script directory: {script_dir_model_path}")
+            else:
+                logging.error(f"YOLO model not found at '{YOLO_MODEL_PATH}' or fallback path '{script_dir_model_path}'")
+                raise FileNotFoundError("YOLO model not found.")
+
+        model.to("cpu")  # Always enforce CPU usage
+        return model
+
+    except Exception as e:
+        logging.error(f"Error loading YOLO model: {e}")
+        raise e
+model = load_model()
 
 def clean_unicode(text):
     return text.encode("utf-8", "replace").decode("utf-8")
