@@ -4,8 +4,7 @@ from flask_cors import CORS
 import os
 import logging
 from pymongo import MongoClient, DESCENDING, UpdateOne
-from gridfs import GridFS
-from bson.objectid import ObjectId # Import ObjectId
+from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 import json
@@ -30,12 +29,11 @@ app_logger.info(f"Flask app.py: .env loaded: {'Yes' if os.getenv('MONGODB_URI') 
 from certificate_processor import extract_and_recommend_courses_from_image_data
 
 app = Flask(__name__)
-CORS(app)
-app_logger.info("Flask app instance created.")
+CORS(app, resources={r"/*": {"origins": "*"}})
+app_logger.info("Flask app instance created with CORS enabled for all origins.")
 
-MONGODB_URI=os.environ.get("MONGODB_URI")
-DB_NAME=os.environ.get("DB_NAME")
-
+MONGODB_URI="mongodb+srv://gurupreetambodapati:MTXH7oEVPg3sJdg2@cluster0.fpsg1.mongodb.net/"
+DB_NAME="imageverse_db"
 
 if not MONGODB_URI:
     app.logger.critical("MONGODB_URI is not set. Please set it in your .env file or environment variables.")
@@ -284,10 +282,10 @@ def convert_pdf_to_images_route():
     if mongo_client is None or db is None or fs_images is None: return jsonify({"error": "Database connection or GridFS not available."}), 503
     if 'pdf_file' not in request.files: return jsonify({"error": "No PDF file part in the request."}), 400
 
-    pdf_file_storage = request.files['pdf_file'] # Assign pdf_file_storage first
+    pdf_file_storage = request.files['pdf_file']
     user_id = request.form.get('userId')
-    # Now pdf_file_storage is defined, so pdf_file_storage.filename can be safely used as a default
     original_pdf_name = request.form.get('originalName', pdf_file_storage.filename)
+
 
     if not user_id: return jsonify({"error": "Missing 'userId' in form data."}), 400
     if not original_pdf_name: return jsonify({"error": "No filename or originalName provided for PDF."}), 400
@@ -321,7 +319,7 @@ def convert_pdf_to_images_route():
         return jsonify({"message": "PDF converted and pages stored successfully.", "converted_files": converted_files_metadata}), 200
 
     except PDFPageCountError: return jsonify({"error": "Could not determine page count. PDF may be corrupted or password-protected."}), 400
-    except PDFSyntaxError: return jsonify({"error": "PDF syntax error. File may be corrupted."}), 400
+    except PDFSyntaxError: return jsonify({"error": "File may be corrupted."}), 400
     except PDFPopplerTimeoutError: return jsonify({"error": "Timeout during PDF page conversion."}), 400
     except Exception as e:
         if "PopplerNotInstalledError" in str(type(e)) or "pdftoppm" in str(e).lower() or "pdfinfo" in str(e).lower(): return jsonify({"error": "PDF processing utilities (Poppler) are not installed/configured correctly (conversion stage)."}), 500
@@ -333,3 +331,6 @@ if __name__ == '__main__':
     app_logger.info(f"Effective MONGODB_DB_NAME: {DB_NAME}")
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)
 
+
+
+    
